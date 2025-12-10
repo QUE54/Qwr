@@ -2,23 +2,34 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Board Login</title>
+<title>Fall Detector Status</title>
+<style>
+  body { font-family: sans-serif; text-align: center; padding: 50px; }
+  .status { font-size: 2em; margin-top: 20px; }
+</style>
 </head>
 <body>
-<h2>Login with BoardID</h2>
-<input type="text" id="boardID" placeholder="Enter Board ID">
-<button onclick="login()">Login</button>
+<h1>Fall Detector</h1>
+<p>Board ID: <span id="boardID">BOARD_001</span></p>
+<p>Status: <span id="status">Waiting...</span></p>
 
 <script>
-function login() {
-  const boardID = document.getElementById('boardID').value;
-  if(boardID) {
-    localStorage.setItem('boardID', boardID);
-    window.location.href = 'dashboard.html';
-  } else {
-    alert("Please enter BoardID");
+const boardID = document.getElementById("boardID").textContent;
+const statusEl = document.getElementById("status");
+
+async function fetchStatus() {
+  try {
+    const res = await fetch(`/status/${boardID}`);
+    const data = await res.json();
+    statusEl.textContent = data.status;
+  } catch(e) {
+    statusEl.textContent = "Error";
   }
 }
+
+// อัปเดตทุก 1 วินาที
+setInterval(fetchStatus, 1000);
+fetchStatus();
 </script>
 </body>
 </html>
