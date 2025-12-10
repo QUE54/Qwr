@@ -2,34 +2,26 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Fall Detector Status</title>
+<title>Fall Detection</title>
 <style>
-  body { font-family: sans-serif; text-align: center; padding: 50px; }
-  .status { font-size: 2em; margin-top: 20px; }
+  body { font-family: sans-serif; text-align: center; margin-top: 50px; }
+  #status { font-size: 2em; color: red; }
 </style>
 </head>
 <body>
-<h1>Fall Detector</h1>
-<p>Board ID: <span id="boardID">BOARD_001</span></p>
-<p>Status: <span id="status">Waiting...</span></p>
+<h1>Fall Detection</h1>
+<div id="status">Waiting...</div>
 
 <script>
-const boardID = document.getElementById("boardID").textContent;
-const statusEl = document.getElementById("status");
+const ws = new WebSocket("wss://yourdomain.com/socket"); // same as Arduino
 
-async function fetchStatus() {
-  try {
-    const res = await fetch(`/status/${boardID}`);
-    const data = await res.json();
-    statusEl.textContent = data.status;
-  } catch(e) {
-    statusEl.textContent = "Error";
-  }
-}
-
-// อัปเดตทุก 1 วินาที
-setInterval(fetchStatus, 1000);
-fetchStatus();
+ws.onopen = () => console.log("WebSocket connected");
+ws.onmessage = (msg) => {
+    if(msg.data === "FALL DETECTED"){
+        document.getElementById("status").textContent = "⚠️ FALL DETECTED!";
+    }
+};
+ws.onclose = () => console.log("WebSocket disconnected");
 </script>
 </body>
 </html>
