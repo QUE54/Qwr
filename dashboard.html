@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Board Dashboard</title>
+<style>
+  body { text-align:center; font-family:sans-serif; transition: background 0.5s; }
+  h1 { margin-top:50px; }
+</style>
+</head>
+<body>
+<h1>Status: Waiting...</h1>
+
+<script>
+const boardID = localStorage.getItem('boardID');
+if(!boardID) {
+  alert("No BoardID found!");
+  window.location.href = 'index.html';
+}
+
+const ws = new WebSocket('ws://YOUR_SERVER_IP:8080');
+
+ws.onopen = () => console.log("Connected to WebSocket");
+
+ws.onmessage = (event) => {
+  const data = JSON.parse(event.data);
+  const status = data[boardID];
+  const h1 = document.querySelector('h1');
+
+  if(status === 'FALL') {
+    document.body.style.background = 'red';
+    h1.innerText = "FALL DETECTED!";
+    alert("มีคนล้ม!");
+  } else if(status === 'STAND') {
+    document.body.style.background = 'white';
+    h1.innerText = "STAND DETECTED!";
+  }
+};
+</script>
+</body>
+</html>
